@@ -1,4 +1,4 @@
-package com.vk.core.presentation.view.state
+package com.vk.core.presentation.state
 
 import androidx.annotation.MainThread
 import androidx.arch.core.executor.ArchTaskExecutor

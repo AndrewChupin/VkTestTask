@@ -1,7 +1,6 @@
-package com.vk.core.presentation
+package com.vk.core.presentation.view
 
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 
 

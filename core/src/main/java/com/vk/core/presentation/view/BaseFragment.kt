@@ -1,4 +1,4 @@
-package com.vk.core.presentation
+package com.vk.core.presentation.view
 
 import android.content.Context
 import android.content.Intent

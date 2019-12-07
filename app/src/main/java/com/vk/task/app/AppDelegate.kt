@@ -3,6 +3,7 @@ package com.vk.task.app
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.vk.task.dependency.injector.DefaultInjectorPlugin
 
 
 class AppDelegate : Application() {
@@ -27,5 +28,7 @@ class AppDelegate : Application() {
         if (hasError) {
             context = applicationContext
         }
+
+        AppInjector.init(this, DefaultInjectorPlugin)
     }
 }

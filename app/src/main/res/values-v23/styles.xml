@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -8,6 +9,7 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:textColor">@color/text_dark_main</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
 </resources>

@@ -1,7 +1,6 @@
 package com.vk.task.domain.card
 
 import com.vk.task.data.game.Game
-import com.vk.task.data.game.GameAnswer
 import com.vk.task.data.game.GameRepository
 import com.vk.task.data.game.GameResult
 import io.reactivex.Completable

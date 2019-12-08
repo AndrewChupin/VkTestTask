@@ -23,8 +23,6 @@ class ResultScreenView(context: Context) : ConstraintLayout(context) {
         val RECYCLER_ID = View.generateViewId()
         val GRADIENT_ID = View.generateViewId()
         val TRY_BUTTON_ID = View.generateViewId()
-
-        private const val COLUMNS_COUNT = 2
     }
 
     lateinit var recycler: RecyclerView
@@ -34,18 +32,20 @@ class ResultScreenView(context: Context) : ConstraintLayout(context) {
     init { initView() }
 
     private fun initView() {
-        resultAdapter = ResultAdapter(COLUMNS_COUNT)
+        val columnCounts = context.resources.getInteger(R.integer.column_count)
+
+        resultAdapter = ResultAdapter(columnCounts)
 
         // RecyclerView
         recycler = putView(
             view = RecyclerView(context) accept {
                 id = RECYCLER_ID
                 clipToPadding = false
-                layoutManager = GridLayoutManager(context, COLUMNS_COUNT) accept {
+                layoutManager = GridLayoutManager(context, columnCounts) accept {
                     spanSizeLookup = resultAdapter.spanSizeLoopUp
                 }
 
-                addItemDecoration(GridItemTitleDecoration(COLUMNS_COUNT, dp(SPACE_BASE)))
+                addItemDecoration(GridItemTitleDecoration(columnCounts, dp(SPACE_BASE)))
                 adapter = resultAdapter
                 overScrollMode = View.OVER_SCROLL_NEVER
 

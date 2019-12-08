@@ -6,8 +6,8 @@ import com.vk.task.dependency.AppComponent
 import com.vk.task.dependency.GameComponent
 import com.vk.task.dependency.MainComponent
 import com.vk.task.dependency.ResultComponent
-import com.vk.task.presentation.screens.main.MainActivity
 import com.vk.task.presentation.screens.game.GameFragment
+import com.vk.task.presentation.screens.main.MainActivity
 import com.vk.task.presentation.screens.result.ResultFragment
 
 

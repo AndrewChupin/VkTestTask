@@ -8,8 +8,8 @@ import com.vk.task.data.game.GameRepositoryAssets
 import com.vk.task.dependency.scope.ActivityScope
 import com.vk.task.domain.card.GameStore
 import com.vk.task.domain.card.GameStoreDefault
-import com.vk.task.presentation.screens.main.MainActivity
 import com.vk.task.presentation.navigation.PlaneNavigator
+import com.vk.task.presentation.screens.main.MainActivity
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides

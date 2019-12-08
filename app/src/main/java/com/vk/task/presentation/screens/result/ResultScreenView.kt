@@ -24,7 +24,7 @@ class ResultScreenView(context: Context) : ConstraintLayout(context) {
         val GRADIENT_ID = View.generateViewId()
         val TRY_BUTTON_ID = View.generateViewId()
 
-        const val COLUMNS_COUNT = 2
+        private const val COLUMNS_COUNT = 2
     }
 
     lateinit var recycler: RecyclerView

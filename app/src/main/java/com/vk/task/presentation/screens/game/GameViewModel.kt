@@ -99,7 +99,7 @@ class GameViewModel(
                 answers.count()
                 val result = GameResult(
                     title = game.title,
-                    answers = answers,
+                    answers = answers.reversed(),
                     totalPoints = answers.size,
                     earnedPoints = answers.count(GameAnswer::isRightAnswer)
                 )

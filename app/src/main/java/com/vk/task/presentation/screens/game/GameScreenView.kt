@@ -34,7 +34,7 @@ class GameScreenView(
 ) : ConstraintLayout(context) {
 
 	companion object {
-		const val DEFAULT_INFLATE_REDUCER = 6
+		private const val DEFAULT_INFLATE_REDUCER = 6
 
 		val TASK_TITLE_ID = View.generateViewId()
 		val TASK_NAME_ID = View.generateViewId()

@@ -12,6 +12,7 @@ const val SPACE_HALF = 8
 const val SPACE_QUARTER = 4
 const val SPACE_TINY = 2
 
+const val FONT_SIZE_BIG_TITLE = 28f
 const val FONT_SIZE_TITLE = 24f
 const val FONT_SIZE_BIG_TEXT = 20f
 const val FONT_SIZE_TEXT = 16f

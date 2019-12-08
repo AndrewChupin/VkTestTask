@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VkTestTask</string>
+    <string name="task">Задание</string>
 </resources>

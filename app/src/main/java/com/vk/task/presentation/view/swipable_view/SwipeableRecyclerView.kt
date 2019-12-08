@@ -2,7 +2,6 @@ package com.vk.task.presentation.view.swipable_view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.task.utils.DirectionType
 

@@ -1,7 +1,6 @@
 package com.vk.task.data.game
 
 import android.content.Context
-import android.net.Uri
 import com.vk.core.utils.extensions.concat
 import com.vk.task.utils.EMPTY_STR
 import com.vk.task.utils.UrlUtils

@@ -2,28 +2,30 @@ package com.vk.task.presentation.screens.game
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import com.vk.core.utils.view.*
-import com.vk.task.R
-import com.vk.task.utils.ROBOTO_MEDIUM
-import android.graphics.drawable.NinePatchDrawable
-import android.graphics.BitmapFactory
-import android.graphics.Rect
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.core.utils.core.log
-import com.vk.core.utils.extensions.*
+import com.vk.core.utils.extensions.accept
+import com.vk.core.utils.extensions.calculateDiffs
+import com.vk.core.utils.extensions.compatColor
+import com.vk.core.utils.extensions.putView
+import com.vk.core.utils.view.*
+import com.vk.task.R
 import com.vk.task.data.game.Game
 import com.vk.task.presentation.view.swipable_view.CardHorizontalLayoutManager
 import com.vk.task.presentation.view.swipable_view.SwipeableRecyclerView
 import com.vk.task.presentation.view.swipable_view.SwipeableSnapHelper
 import com.vk.task.utils.DirectionType
+import com.vk.task.utils.ROBOTO_MEDIUM
 import com.vk.task.utils.ext.setBackgroundNinePatch
 
 

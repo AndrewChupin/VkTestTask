@@ -1,7 +1,11 @@
 package com.vk.task.presentation.screens.game
 
-import com.vk.core.presentation.controller.*
-import com.vk.core.presentation.state.*
+import com.vk.core.presentation.controller.DispatcherStateful
+import com.vk.core.presentation.controller.StateController
+import com.vk.core.presentation.controller.StateHolder
+import com.vk.core.presentation.controller.ViewModelStateful
+import com.vk.core.presentation.state.ViewProperty
+import com.vk.core.presentation.state.ViewState
 import com.vk.core.utils.extensions.optional
 import com.vk.task.data.game.Game
 import com.vk.task.data.game.GameAnswer

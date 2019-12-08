@@ -1,11 +1,11 @@
 package com.vk.task.utils
 
 import android.view.View
-import org.hamcrest.Description
-import org.hamcrest.TypeSafeMatcher
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
+import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.TypeSafeMatcher
 
 
 fun getCountFromRecyclerView(): Int {

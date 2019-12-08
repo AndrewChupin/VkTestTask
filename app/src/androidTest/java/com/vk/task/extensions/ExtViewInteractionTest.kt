@@ -4,8 +4,6 @@ import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
-import com.vk.task.utils.sleep
-import java.util.concurrent.TimeUnit
 
 
 private const val LEAST_DISPLAYED_TIME = 90

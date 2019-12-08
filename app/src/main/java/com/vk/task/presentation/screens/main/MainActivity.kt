@@ -1,7 +1,7 @@
 package com.vk.task.presentation.screens.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.vk.task.app.AppInjector
 import com.vk.task.presentation.screens.game.GameScreen
 import ru.terrakok.cicerone.Navigator

@@ -46,16 +46,10 @@ dependencies {
     // Kotlin
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version_kotlin"
 
-    // Compat
-    api "androidx.appcompat:appcompat:$version_compat"
-
     // Design
     api "com.google.android.material:material:$version_material"
     api "androidx.recyclerview:recyclerview:$version_material_new"
     api "androidx.constraintlayout:constraintlayout:$version_constraints"
-
-    // Room
-    api "androidx.room:room-runtime:$version_room"
 
     // Rx
     api "io.reactivex.rxjava2:rxjava:$version_rxjava"

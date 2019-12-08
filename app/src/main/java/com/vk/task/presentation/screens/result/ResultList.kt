@@ -8,15 +8,14 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.vk.core.presentation.list.BaseSingleAdapters
 import com.vk.core.presentation.list.BaseViewHolder
 import com.vk.core.utils.extensions.accept
@@ -30,7 +29,6 @@ import com.vk.task.data.game.GameResult
 import com.vk.task.utils.ROBOTO_BOLD
 import com.vk.task.utils.ROBOTO_MEDIUM
 import com.vk.task.utils.ROBOTO_REGULAR
-import com.vk.task.utils.ext.setBackgroundNinePatch
 
 
 class ResultAdapter(
@@ -38,7 +36,7 @@ class ResultAdapter(
 ) : BaseSingleAdapters<GameResult>(diffUtilCallback = ResultDiffUtils()) {
 
     companion object {
-        private const val HEIGHT_MULTIPLIER = 0.625
+        private const val HEIGHT_MULTIPLIER = 1.25f
 
         private const val TYPE_HEADER = 0
         private const val TYPE_ITEM = 1
@@ -64,7 +62,7 @@ class ResultAdapter(
 
             else -> ResultItemViewHolder(ResultItemView(viewGroup.context) accept {
                 val columnWidth = columnWidth(columnsCount, dp(SPACE_BASE))
-                val columnHeight = (columnWidth * (columnsCount * HEIGHT_MULTIPLIER)).toInt()
+                val columnHeight = (columnWidth * HEIGHT_MULTIPLIER).toInt()
                 layoutParams = linearParams(columnWidth, columnHeight)
             })
         }
@@ -249,7 +247,8 @@ class ResultItemView(context: Context) : ConstraintLayout(context) {
     fun setData(item: GameAnswer) {
         Glide.with(context)
             .load(item.character.image)
-            .apply(RequestOptions().transforms(CenterCrop(), RoundedCorners(dp(SPACE_BASE))))
+            .transform(CenterCrop(), RoundedCorners(dp(SPACE_BASE)))
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .into(image)
 
         personNameText.text = item.character.name

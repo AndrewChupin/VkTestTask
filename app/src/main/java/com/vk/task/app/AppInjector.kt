@@ -9,8 +9,8 @@ import com.vk.core.utils.extensions.optional
 import com.vk.task.dependency.AppComponent
 import com.vk.task.dependency.MainComponent
 import com.vk.task.dependency.injector.InjectorPlugin
-import com.vk.task.presentation.screens.main.MainActivity
 import com.vk.task.presentation.screens.game.GameFragment
+import com.vk.task.presentation.screens.main.MainActivity
 import com.vk.task.presentation.screens.result.ResultFragment
 
 

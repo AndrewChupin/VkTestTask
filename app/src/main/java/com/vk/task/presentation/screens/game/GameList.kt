@@ -1,34 +1,28 @@
 package com.vk.task.presentation.screens.game
 
 import android.content.Context
-import android.net.Uri
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.vk.core.presentation.list.BaseMultiplyAdapter
 import com.vk.core.presentation.list.BaseViewHolder
-import com.vk.core.utils.diff.BaseIdenticalDiffUtil
 import com.vk.core.utils.extensions.accept
 import com.vk.core.utils.extensions.compatColor
 import com.vk.core.utils.extensions.putView
 import com.vk.core.utils.extensions.setPadding
 import com.vk.core.utils.view.*
 import com.vk.task.R
-import com.vk.task.data.game.CharacterInfo
 import com.vk.task.data.game.GameCard
-import com.vk.task.utils.ROBOTO_BOLD
 import com.vk.task.utils.ROBOTO_MEDIUM
-import com.vk.task.utils.ext.setBackgroundNinePatch
 
 
 class PersonCardAdapter : BaseMultiplyAdapter<GameCard, PersonCardViewHolder>() {
@@ -111,7 +105,8 @@ class PersonCardView(context: Context) : FrameLayout(context) {
     fun setData(card: GameCard) {
         Glide.with(context)
             .load(card.character.image)
-            .apply(RequestOptions().transforms(CenterCrop(), RoundedCorners(dp(SPACE_BASE))))
+            .transform(CenterCrop(), RoundedCorners(dp(SPACE_BASE)))
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .into(imageView)
 
         personNameText.text = card.character.name

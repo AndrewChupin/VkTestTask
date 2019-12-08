@@ -40,13 +40,17 @@ class GameFragment : FragmentStateful<GameDispatcher, GameViewState, GameScreenV
         }
     }
 
-    override fun onScrolling(direction: DirectionType, ratio: Float) {
+    override fun onScrolling(direction: DirectionType, ratio: Float, position: Int) {
         content.inflateButton(direction, ratio)
     }
 
-    override fun onSwiped(direction: DirectionType) {
+    override fun onSwiped(direction: DirectionType, position: Int) {
         dispatcher.swipedNext(direction)
         content.deflateButton(direction)
+    }
+
+    override fun onStartSwiping(position: Int) {
+        dispatcher.swipingStart(position)
     }
 
     override fun render(state: GameViewState) {

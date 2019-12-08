@@ -24,34 +24,32 @@ class SwipeableScroller(
     private val interpolator = AccelerateInterpolator()
 
     override fun onTargetFound(targetView: View, state: RecyclerView.State, action: Action) {
-        val x = targetView.translationX.toInt()
-        val y = targetView.translationY.toInt()
-
         when (type) {
             ScrollType.CANCEL -> action.update(
-                x, y,
+                targetView.translationX.toInt(), targetView.translationY.toInt(),
                 DEFAULT_SWIPE_DURATION, interpolator
             )
-            ScrollType.AUTO -> action.update(
-                getScrollByDistance(manager.swipeDirection), y,
-                DEFAULT_SWIPE_DURATION, interpolator
-            )
+            ScrollType.AUTO -> {
+                val distX = when (manager.swipeDirection) {
+                    DirectionType.LEFT -> manager.width * 2
+                    DirectionType.RIGHT -> -manager.width * 2
+                }
+                action.update(distX, targetView.translationY.toInt(), DEFAULT_SWIPE_DURATION, interpolator)
+            }
             ScrollType.MANUAL -> action.update(
-                -x * DEFAULT_ACCELERATOR, -y * DEFAULT_ACCELERATOR,
+                -targetView.translationX.toInt() * DEFAULT_ACCELERATOR,
+                -targetView.translationY.toInt() * DEFAULT_ACCELERATOR,
                 DEFAULT_SWIPE_DURATION, interpolator
             )
+        }
+
+        if (type != ScrollType.CANCEL) {
+            manager.delegate.onStartSwiping(manager.currentPosition)
         }
     }
 
     override fun onStart() {
         manager.state = SwipeStateType.ANIMATING
-    }
-
-    private fun getScrollByDistance(direction: DirectionType): Int {
-        return when (direction) {
-            DirectionType.LEFT -> manager.width * 2
-            DirectionType.RIGHT -> -manager.width * 2
-        }
     }
 
     override fun onStop() {}

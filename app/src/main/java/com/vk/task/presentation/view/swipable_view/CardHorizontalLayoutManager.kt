@@ -16,12 +16,12 @@ enum class SwipeStateType {
 
 
 class CardHorizontalLayoutManager(
-    private val cardStackListener: SwipeableRecyclerView.Delegate
+    val delegate: SwipeableRecyclerView.Delegate
 ) : RecyclerView.LayoutManager(), RecyclerView.SmoothScroller.ScrollVectorProvider {
 
     companion object {
         private const val DEFAULT_ITEM_CACHE = 3
-        private const val DEFAULT_PREVIOUS_SCALE = 0.9f
+        private const val DEFAULT_SCALE_REDUCER = 0.1f
         private const val DEFAULT_ROTATION = 2.25f
     }
 
@@ -29,7 +29,7 @@ class CardHorizontalLayoutManager(
 
     internal var state = SwipeStateType.STATIC
     internal var currentPosition = 0
-    internal var targetPosition = RecyclerView.NO_POSITION
+    internal var innerTargetPosition = RecyclerView.NO_POSITION
 
     var swipeDirection: DirectionType = DirectionType.LEFT
     val currentCard: View? get() = findViewByPosition(currentPosition)
@@ -59,14 +59,13 @@ class CardHorizontalLayoutManager(
     override fun onScrollStateChanged(scrollState: Int) {
         when (scrollState) {
             RecyclerView.SCROLL_STATE_IDLE -> when {
-                targetPosition == RecyclerView.NO_POSITION || targetPosition == currentPosition -> {
+                innerTargetPosition == RecyclerView.NO_POSITION || innerTargetPosition == currentPosition -> {
                     state = SwipeStateType.STATIC
-                    targetPosition = RecyclerView.NO_POSITION
+                    innerTargetPosition = RecyclerView.NO_POSITION
                 }
-                currentPosition < targetPosition -> smoothScrollTo(targetPosition)
+                currentPosition < innerTargetPosition -> smoothScrollTo(innerTargetPosition)
             }
-            RecyclerView.SCROLL_STATE_DRAGGING -> state =
-                SwipeStateType.DRAGGING
+            RecyclerView.SCROLL_STATE_DRAGGING -> state = SwipeStateType.DRAGGING
             RecyclerView.SCROLL_STATE_SETTLING -> Unit // Because don't call every time
         }
     }
@@ -95,88 +94,60 @@ class CardHorizontalLayoutManager(
             }
 
             state = SwipeStateType.RESTORING
-            cardStackListener.onSwiped(getScrollDirection())
+            delegate.onSwiped(getScrollDirection(), currentPosition)
 
             currentPosition++
             currentX = 0
-            if (currentPosition == targetPosition) {
-                targetPosition = RecyclerView.NO_POSITION
+            if (currentPosition == innerTargetPosition) {
+                innerTargetPosition = RecyclerView.NO_POSITION
             }
         }
 
         detachAndScrapAttachedViews(recycler)
 
-        val parentTop = paddingTop
-        val parentLeft = paddingLeft
-        val parentRight = width - paddingLeft
-        val parentBottom = height - paddingBottom
+        if (state == SwipeStateType.DRAGGING) {
+            delegate.onScrolling(getScrollDirection(), getCurrentRatio(), currentPosition)
+        }
 
-        var i = currentPosition
-
-        while (i < currentPosition + DEFAULT_ITEM_CACHE && i < itemCount) {
-            val child = recycler.getViewForPosition(i)
+        var position = currentPosition
+        while (position < currentPosition + DEFAULT_ITEM_CACHE && position < itemCount) {
+            val child = recycler.getViewForPosition(position)
             addView(child, 0)
             measureChildWithMargins(child, 0, 0)
-            layoutDecoratedWithMargins(child, parentLeft, parentTop, parentRight, parentBottom)
+            layoutDecoratedWithMargins(child, paddingLeft, paddingTop, width - paddingLeft, height - paddingBottom)
 
-            resetTranslation(child)
-            resetScale(child)
-            resetRotation(child)
+            child.translationX = 0.0f
+            child.scaleX = 1.0f
+            child.scaleY = 1.0f
+            child.rotation = 0.0f
 
-            if (i == currentPosition) {
-                updateTranslation(child)
-                resetScale(child)
-                updateRotation(child)
+            if (position == currentPosition) {
+                child.translationX = currentX.toFloat()
+                child.scaleX = 1.0f
+                child.scaleY = 1.0f
+                child.rotation = abs(getCurrentRatio()) * DEFAULT_ROTATION
             } else {
-                val currentIndex = i - currentPosition
-                updateScale(child, currentIndex)
-                resetRotation(child)
+                val diffPosition = position - currentPosition
+                updateScale(child, diffPosition)
+                child.rotation = 0.0f
             }
-            i++
+
+            position++
         }
-
-        if (state == SwipeStateType.DRAGGING) {
-            cardStackListener.onScrolling(getScrollDirection(), getCurrentRatio())
-        }
-
-
     }
-
-
-    // Transition
-    private fun updateTranslation(view: View) {
-        view.translationX = currentX.toFloat()
-    }
-
-    private fun resetTranslation(view: View) {
-        view.translationX = 0.0f
-    }
-
 
     // Scale
-    private fun updateScale(view: View, index: Int) {
-        val nextIndex = index - 1
-        val currentScale = 1.0f - index * (1.0f - DEFAULT_PREVIOUS_SCALE)
-        val nextScale = 1.0f - nextIndex * (1.0f - DEFAULT_PREVIOUS_SCALE)
-        val targetScale = currentScale + (nextScale - currentScale) * getCurrentRatio()
+    private fun updateScale(view: View, diff: Int) {
+        val newDiff = diff - 1
 
-        view.scaleX = targetScale
-        view.scaleY = targetScale
-    }
+        val currentScale = 1.0f - diff * DEFAULT_SCALE_REDUCER
+        val nextScale = 1.0f - newDiff * DEFAULT_SCALE_REDUCER
+        val diffScale = nextScale - currentScale
 
-    private fun resetScale(view: View) {
-        view.scaleX = 1.0f
-        view.scaleY = 1.0f
-    }
+        val newScale = currentScale + diffScale * getCurrentRatio()
 
-
-    // Rotation
-    private fun updateRotation(view: View) {
-        view.rotation = abs(getCurrentRatio()) * DEFAULT_ROTATION
-    }
-
-    private fun resetRotation(view: View) {
-        view.rotation = 0.0f
+        view.scaleX = newScale
+        view.scaleY = newScale
     }
 
 
@@ -190,12 +161,9 @@ class CardHorizontalLayoutManager(
     }
 
     private fun smoothScrollTo(position: Int) {
-        targetPosition = position
+        innerTargetPosition = position
 
-        val scroller = SwipeableScroller(
-            ScrollType.AUTO,
-            this
-        )
+        val scroller = SwipeableScroller(ScrollType.AUTO, this)
         scroller.targetPosition = currentPosition
         startSmoothScroll(scroller)
     }
@@ -209,13 +177,10 @@ class CardHorizontalLayoutManager(
         }
     }
 
-    private fun getCurrentRatio(): Float {
-        val ratio = abs(currentX) / (width / 2.0f)
-        return min(ratio, 1.0f)
-    }
+    private fun getCurrentRatio(): Float = min(abs(currentX) / (width / 2.0f), 1.0f)
 
     private fun isSwipeCompleted(): Boolean {
-        if (state != SwipeStateType.ANIMATING || currentPosition >= targetPosition) {
+        if (state != SwipeStateType.ANIMATING || currentPosition >= innerTargetPosition) {
             return false
         }
 

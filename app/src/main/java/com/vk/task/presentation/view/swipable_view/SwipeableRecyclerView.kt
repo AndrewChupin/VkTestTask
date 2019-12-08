@@ -12,8 +12,9 @@ class SwipeableRecyclerView @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyle) {
 
     interface Delegate {
-        fun onScrolling(direction: DirectionType, ratio: Float)
-        fun onSwiped(direction: DirectionType)
+        fun onScrolling(direction: DirectionType, ratio: Float, position: Int)
+        fun onSwiped(direction: DirectionType, position: Int)
+        fun onStartSwiping(position: Int)
     }
 
     override fun setLayoutManager(manager: LayoutManager?) {

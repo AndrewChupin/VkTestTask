@@ -262,7 +262,7 @@ class ResultItemView(context: Context) : ConstraintLayout(context) {
                 accuracyText.isVisible = true
                 personNameText.isVisible = true
                 rightFilmNameText.isVisible = true
-                wrongFilmNameText.isVisible = true
+                wrongFilmNameText.isVisible = !item.isRightAnswer
                 gradient.isVisible = true
             })
             .into(image)

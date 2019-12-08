@@ -2,7 +2,6 @@ package com.vk.task.presentation.screens.game
 
 import com.vk.core.presentation.controller.DispatcherStateful
 import com.vk.core.presentation.controller.StateController
-import com.vk.core.presentation.controller.StateHolder
 import com.vk.core.presentation.controller.ViewModelStateful
 import com.vk.core.presentation.state.ViewProperty
 import com.vk.core.presentation.state.ViewState
@@ -14,7 +13,6 @@ import com.vk.task.data.game.GameResult
 import com.vk.task.domain.card.GameStore
 import com.vk.task.presentation.screens.result.ResultScreen
 import com.vk.task.utils.DirectionType
-import com.vk.task.utils.EMPTY_STR
 import io.reactivex.disposables.CompositeDisposable
 import ru.terrakok.cicerone.Router
 
@@ -82,6 +80,14 @@ class GameStateController : StateController<GameViewState> {
         return null
     }
 
+    fun swipePreComputation(position: Int) {
+        state.game.currentValue() optional { game ->
+            if (position == game.cards.size - 1) {
+                state.isLoading.update(true)
+            }
+        }
+    }
+
     private data class GameDirtyState(
         var answers: MutableList<GameAnswer> = mutableListOf(),
         var currentPosition: Int = 0
@@ -92,6 +98,7 @@ class GameStateController : StateController<GameViewState> {
 // Dispatcher
 interface GameDispatcher : DispatcherStateful<GameViewState> {
     fun swipedNext(direction: DirectionType)
+    fun swipingStart(position: Int)
 }
 
 
@@ -119,5 +126,9 @@ class GameViewModel(
                     router.navigateTo(ResultScreen())
                 })
         }
+    }
+
+    override fun swipingStart(position: Int) {
+        stateController.swipePreComputation(position)
     }
 }

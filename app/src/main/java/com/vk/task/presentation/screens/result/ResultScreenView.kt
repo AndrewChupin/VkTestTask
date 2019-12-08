@@ -3,14 +3,12 @@ package com.vk.task.presentation.screens.result
 import android.content.Context
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewPropertyAnimator
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.vk.core.utils.extensions.accept
-import com.vk.core.utils.extensions.calculateDiffs
-import com.vk.core.utils.extensions.putView
-import com.vk.core.utils.extensions.setPadding
+import com.vk.core.utils.extensions.*
 import com.vk.core.utils.view.*
 import com.vk.task.R
 import com.vk.task.data.game.GameResult
@@ -29,6 +27,9 @@ class ResultScreenView(context: Context) : ConstraintLayout(context) {
     lateinit var tryAgainButton: Button
     lateinit var resultAdapter: ResultAdapter
 
+    private var showAnimator: ViewPropertyAnimator? = null
+    private var hideAnimator: ViewPropertyAnimator? = null
+
     init { initView() }
 
     private fun initView() {
@@ -44,6 +45,27 @@ class ResultScreenView(context: Context) : ConstraintLayout(context) {
                 layoutManager = GridLayoutManager(context, columnCounts) accept {
                     spanSizeLookup = resultAdapter.spanSizeLoopUp
                 }
+
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        when (newState) {
+                            RecyclerView.SCROLL_STATE_DRAGGING -> {
+                                if (hideAnimator == null) {
+                                    showAnimator = null
+                                    hideAnimator = tryAgainButton.hideWithScale()
+                                }
+                            }
+                            RecyclerView.SCROLL_STATE_SETTLING,
+                            RecyclerView.SCROLL_STATE_IDLE -> {
+                                if (showAnimator == null) {
+                                    hideAnimator = null
+                                    showAnimator = tryAgainButton.showWithScale()
+                                }
+                            }
+                        }
+                    }
+                })
 
                 addItemDecoration(GridItemTitleDecoration(columnCounts, dp(SPACE_BASE)))
                 adapter = resultAdapter
@@ -88,6 +110,13 @@ class ResultScreenView(context: Context) : ConstraintLayout(context) {
             connect(TRY_BUTTON_ID, CS_END, CS_PARENT_ID, CS_END)
             connect(TRY_BUTTON_ID, CS_BOTTOM, CS_PARENT_ID, CS_BOTTOM, dp(SPACE_BASE))
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        tryAgainButton.clearAnimation()
+        showAnimator = null
+        hideAnimator = null
     }
 
     fun provideData(result: GameResult) = resultAdapter.calculateDiffs(result)

@@ -26,10 +26,10 @@ class PlaneNavigator @Inject constructor(
     ) {
         currentFragment?.let {
             fragmentTransaction?.setCustomAnimations(
-                R.anim.enter_scale,
-                R.anim.exit_scale,
-                R.anim.pop_enter_scale,
-                R.anim.pop_exit_scale
+                R.anim.enter_right_to_left,
+                R.anim.exit_right_to_left,
+                R.anim.pop_enter_left_to_right,
+                R.anim.pop_exit_left_to_right
             )
         }
     }

@@ -28,14 +28,16 @@ android {
             keyPassword "$propKeyPasswordRelease"
         }
 
-        setProperty("archivesBaseName", "$applicationName-v${version_name}")
+        setProperty("archivesBaseName", "VK-Task-v${version_name}")
     }
 
     buildTypes {
+
         debug {
             debuggable true
             minifyEnabled false
             shrinkResources false
+            signingConfig signingConfigs.debug
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -43,6 +45,8 @@ android {
         release {
             debuggable false
             minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

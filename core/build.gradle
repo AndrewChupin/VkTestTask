@@ -1,0 +1,68 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion version_compile_sdk.toInteger()
+
+    defaultConfig {
+        minSdkVersion version_min_sdk.toInteger()
+        targetSdkVersion version_targer_sdk.toInteger()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            debuggable false
+            minifyEnabled true
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
+    }
+}
+
+dependencies {
+    // Kotlin
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version_kotlin"
+
+    // Design
+    api "com.google.android.material:material:$version_material"
+    api "androidx.recyclerview:recyclerview:$version_material_new"
+    api "androidx.constraintlayout:constraintlayout:$version_constraints"
+
+    // Rx
+    api "io.reactivex.rxjava2:rxjava:$version_rxjava"
+    api "io.reactivex.rxjava2:rxandroid:$version_rxandroid"
+
+    // Lifecycle
+    api "androidx.lifecycle:lifecycle-extensions:$version_lifecycle"
+
+    // Dagger
+    api "com.google.dagger:dagger:$version_dagger"
+}
+
+
+kapt {
+    generateStubs = true
+}

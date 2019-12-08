@@ -49,7 +49,7 @@ class SwipeableSnapHelper : SnapHelper() {
         }
 
         if (scrollType == ScrollType.MANUAL) {
-            manager.targetPosition = manager.currentPosition + 1
+            manager.innerTargetPosition = manager.currentPosition + 1
         }
 
         SwipeableScroller(scrollType, manager) accept {

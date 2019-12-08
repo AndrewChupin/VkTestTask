@@ -29,6 +29,7 @@ import com.vk.task.data.game.GameResult
 import com.vk.task.utils.ROBOTO_BOLD
 import com.vk.task.utils.ROBOTO_MEDIUM
 import com.vk.task.utils.ROBOTO_REGULAR
+import com.vk.task.utils.SimpleGlideListener
 
 
 class ResultAdapter(
@@ -135,6 +136,7 @@ class ResultItemView(context: Context) : ConstraintLayout(context) {
     private lateinit var personNameText: TextView
     private lateinit var rightFilmNameText: TextView
     private lateinit var wrongFilmNameText: TextView
+    private lateinit var gradient: View
 
     init { initView() }
 
@@ -149,7 +151,7 @@ class ResultItemView(context: Context) : ConstraintLayout(context) {
         )
 
         // Gradient
-        putView(
+        gradient = putView(
             view = View(context) accept {
                 id = GRADIENT_ID
                 background = context.getDrawable(R.drawable.dark_gradient)
@@ -245,10 +247,24 @@ class ResultItemView(context: Context) : ConstraintLayout(context) {
 
 
     fun setData(item: GameAnswer) {
+        accuracyText.isVisible = false
+        personNameText.isVisible = false
+        rightFilmNameText.isVisible = false
+        wrongFilmNameText.isVisible = false
+        gradient.isVisible = false
+
         Glide.with(context)
             .load(item.character.image)
             .transform(CenterCrop(), RoundedCorners(dp(SPACE_BASE)))
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .addListener(SimpleGlideListener {
+                // Glide don't call if dead
+                accuracyText.isVisible = true
+                personNameText.isVisible = true
+                rightFilmNameText.isVisible = true
+                wrongFilmNameText.isVisible = !item.isRightAnswer
+                gradient.isVisible = true
+            })
             .into(image)
 
         personNameText.text = item.character.name

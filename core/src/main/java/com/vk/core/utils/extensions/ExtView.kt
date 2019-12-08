@@ -25,3 +25,19 @@ var View.isVisible: Boolean
     set(value) {
         visibility = if (value) View.VISIBLE else View.GONE
     }
+
+
+@Suppress("RecursivePropertyAccessor")
+fun View.hideWithScale(duration: Long = 250, scaleX: Float = 0.5f, scaleY: Float = 0.5f) = this.animate()
+    .scaleX(scaleX)
+    .scaleY(scaleY)
+    .alpha(0f)
+    .setDuration(duration)
+
+
+@Suppress("RecursivePropertyAccessor")
+fun View.showWithScale(duration: Long = 250) = this.animate()
+    .scaleX(1f)
+    .scaleY(1f)
+    .alpha(1f)
+    .setDuration(duration)

@@ -1,15 +1,19 @@
 package com.vk.task.data.game
 
 import android.content.Context
+import android.net.Uri
 import com.vk.core.utils.extensions.concat
 import com.vk.task.utils.EMPTY_STR
+import com.vk.task.utils.UrlUtils
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.json.JSONObject
 
 
 interface GameRepository {
     fun getGame(): Single<Game>
-    fun saveGameAnswer(answer: GameAnswer)
+    fun getGameResult(): Single<GameResult>
+    fun saveGameResult(gameResult: GameResult): Completable
 }
 
 class GameRepositoryAssets(
@@ -19,7 +23,8 @@ class GameRepositoryAssets(
     @Volatile
     private var gameGenerator: GameGenerator? = null
 
-    private var cachedAnswers = mutableListOf<GameAnswer>()
+    @Volatile
+    private var gameResult: GameResult? = null
 
     override fun getGame(): Single<Game> = Single.fromCallable {
         val generator = gameGenerator
@@ -33,8 +38,13 @@ class GameRepositoryAssets(
         gameData.generate()
     }
 
-    override fun saveGameAnswer(answer: GameAnswer) {
-        cachedAnswers.add(answer)
+
+    override fun saveGameResult(gameResult: GameResult): Completable = Completable.fromAction {
+        this.gameResult = gameResult
+    }
+
+    override fun getGameResult(): Single<GameResult> = Single.fromCallable {
+        gameResult
     }
 
     private fun loadGameGenerator(): GameGenerator {
@@ -92,6 +102,8 @@ class GameRepositoryAssets(
         val name = jsonCharacter.getString("name")
         val image = jsonCharacter.getString("image")
 
-        return CharacterInfo(id, image, name, showId)
+        return CharacterInfo(id, UrlUtils.getAssetsUrl(image), name, showId)
     }
+
+
 }

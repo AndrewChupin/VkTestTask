@@ -1,4 +1,4 @@
-package com.vk.task.presentation.view.swipable_view.stuff
+package com.vk.task.presentation.view.swipable_view
 
 import android.view.View
 import android.view.animation.AccelerateInterpolator
@@ -29,13 +29,16 @@ class SwipeableScroller(
 
         when (type) {
             ScrollType.CANCEL -> action.update(
-                x, y, DEFAULT_SWIPE_DURATION, interpolator
+                x, y,
+                DEFAULT_SWIPE_DURATION, interpolator
             )
             ScrollType.AUTO -> action.update(
-                getScrollByDistance(manager.swipeDirection), y, DEFAULT_SWIPE_DURATION, interpolator
+                getScrollByDistance(manager.swipeDirection), y,
+                DEFAULT_SWIPE_DURATION, interpolator
             )
             ScrollType.MANUAL -> action.update(
-                -x * DEFAULT_ACCELERATOR, -y * DEFAULT_ACCELERATOR, DEFAULT_SWIPE_DURATION, interpolator
+                -x * DEFAULT_ACCELERATOR, -y * DEFAULT_ACCELERATOR,
+                DEFAULT_SWIPE_DURATION, interpolator
             )
         }
     }

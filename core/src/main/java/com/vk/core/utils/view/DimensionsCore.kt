@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.util.TypedValue
 import kotlin.math.roundToInt
 
+const val SPACE_HUGE = 48
 const val SPACE_DOUBLE = 32
 const val SPACE_ONE_AND_HALF = 24
 const val SPACE_BASE = 16

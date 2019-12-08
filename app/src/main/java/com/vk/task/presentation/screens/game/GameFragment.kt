@@ -12,11 +12,11 @@ import com.vk.task.utils.DirectionType
 import ru.terrakok.cicerone.android.support.SupportAppScreen
 
 
-class CardScreen: SupportAppScreen() {
+class GameScreen: SupportAppScreen() {
     override fun getFragment(): Fragment = GameFragment.newInstance()
 }
 
-class GameFragment : FragmentStateful<CardDispatcher, CardViewState, GameScreenView>(), SwipeableRecyclerView.Delegate {
+class GameFragment : FragmentStateful<GameDispatcher, GameViewState, GameScreenView>(), SwipeableRecyclerView.Delegate {
 
     companion object {
         fun newInstance(): GameFragment = GameFragment()
@@ -40,16 +40,16 @@ class GameFragment : FragmentStateful<CardDispatcher, CardViewState, GameScreenV
         }
     }
 
-    override fun onCardDragging(direction: DirectionType, ratio: Float) {
+    override fun onScrolling(direction: DirectionType, ratio: Float) {
         content.inflateButton(direction, ratio)
     }
 
-    override fun onCardSwiped(direction: DirectionType) {
-        dispatcher.swipedNextCard(direction)
+    override fun onSwiped(direction: DirectionType) {
+        dispatcher.swipedNext(direction)
         content.deflateButton(direction)
     }
 
-    override fun render(state: CardViewState) {
+    override fun render(state: GameViewState) {
         state accept {
             game bind content::setData
         }

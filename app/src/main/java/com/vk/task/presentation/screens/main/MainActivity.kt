@@ -3,7 +3,7 @@ package com.vk.task.presentation.screens.main
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.vk.task.app.AppInjector
-import com.vk.task.presentation.screens.game.CardScreen
+import com.vk.task.presentation.screens.game.GameScreen
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            router.newRootChain(CardScreen())
+            router.newRootChain(GameScreen())
         }
     }
 

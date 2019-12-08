@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">VkTestTask</string>
     <string name="task">Задание</string>
+    <string name="counter">%1$d / %2$d</string>
+    <string name="your_result">Ваш результат</string>
+    <string name="right">Верно</string>
+    <string name="wrong">Неверно</string>
+    <string name="try_one_more">Попробовать еще раз</string>
 </resources>

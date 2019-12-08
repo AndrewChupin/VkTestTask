@@ -30,7 +30,8 @@ interface MainComponent {
     fun inject(activity: MainActivity)
 
     // Builders
-    fun cardComponentBuilder(): CardComponent.Builder
+    fun gameComponentBuilder(): GameComponent.Builder
+    fun resultComponentBuilder(): ResultComponent.Builder
 
     // Builder
     @Subcomponent.Builder

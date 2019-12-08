@@ -1,4 +1,4 @@
-package com.vk.task.presentation.view.swipable_view.stuff
+package com.vk.task.presentation.view.swipable_view
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

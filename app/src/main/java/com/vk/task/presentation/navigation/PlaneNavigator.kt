@@ -1,9 +1,13 @@
 package com.vk.task.presentation.navigation
 
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
+import com.vk.task.R
 import ru.terrakok.cicerone.android.support.SupportAppNavigator
 import ru.terrakok.cicerone.android.support.SupportAppScreen
+import ru.terrakok.cicerone.commands.Command
 import javax.inject.Inject
 
 
@@ -14,4 +18,19 @@ class PlaneNavigator @Inject constructor(
 
     override fun backToUnexisting(screen: SupportAppScreen) {}
 
+    override fun setupFragmentTransaction(
+        command: Command?,
+        currentFragment: Fragment?,
+        nextFragment: Fragment?,
+        fragmentTransaction: FragmentTransaction?
+    ) {
+        currentFragment?.let {
+            fragmentTransaction?.setCustomAnimations(
+                R.anim.enter_scale,
+                R.anim.exit_scale,
+                R.anim.pop_enter_scale,
+                R.anim.pop_exit_scale
+            )
+        }
+    }
 }

@@ -6,6 +6,7 @@ import com.vk.core.presentation.controller.StateHolder
 import com.vk.core.presentation.controller.ViewModelStateful
 import com.vk.core.presentation.state.ViewProperty
 import com.vk.core.presentation.state.ViewState
+import com.vk.core.utils.extensions.accept
 import com.vk.core.utils.extensions.optional
 import com.vk.task.data.game.Game
 import com.vk.task.data.game.GameAnswer
@@ -20,7 +21,8 @@ import ru.terrakok.cicerone.Router
 
 // ViewState
 data class GameViewState(
-    val game: ViewProperty<Game>
+    val game: ViewProperty<Game>,
+    val isLoading: ViewProperty<Boolean>
 ) : ViewState
 
 
@@ -32,7 +34,8 @@ class GameStateController : StateController<GameViewState> {
 
     override fun createState(): GameViewState {
         return GameViewState(
-            game = ViewProperty.create(null)
+            game = ViewProperty.create(null),
+            isLoading = ViewProperty.create(true)
         )
     }
 
@@ -62,9 +65,14 @@ class GameViewModel(
     init {
         cardStore.createNewGame()
             .bindSubscribe(
-                onSuccess = { game ->
+                onSuccess = { newGame ->
                     currentPosition = 0
-                    state.game.update(game)
+
+                    state accept {
+                        game.update(newGame)
+                        isLoading.update(false)
+                    }
+
                 })
     }
 
@@ -74,7 +82,8 @@ class GameViewModel(
 
     override fun createState(): GameViewState {
         return GameViewState(
-            game = ViewProperty.create(null)
+            game = ViewProperty.create(null),
+            isLoading = ViewProperty.create(true)
         )
     }
 
@@ -109,7 +118,7 @@ class GameViewModel(
                 )
                 cardStore.storeResult(result)
                     .bindSubscribe(onSuccess = {
-                        router.newRootScreen(ResultScreen())
+                        router.navigateTo(ResultScreen())
                     })
             }
         }

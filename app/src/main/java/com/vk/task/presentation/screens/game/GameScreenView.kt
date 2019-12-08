@@ -2,22 +2,21 @@ package com.vk.task.presentation.screens.game
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.core.utils.core.log
-import com.vk.core.utils.extensions.accept
-import com.vk.core.utils.extensions.calculateDiffs
-import com.vk.core.utils.extensions.compatColor
-import com.vk.core.utils.extensions.putView
+import com.vk.core.utils.extensions.*
 import com.vk.core.utils.view.*
 import com.vk.task.R
 import com.vk.task.data.game.Game
@@ -43,12 +42,15 @@ class GameScreenView(
 		val LEFT_BUTTON_ID = View.generateViewId()
 		val RIGHT_BUTTON_ID = View.generateViewId()
 		val CARD_LIST_ID = View.generateViewId()
+		val CARD_PROGRESS_BAR_ID = View.generateViewId()
 	}
 
 	lateinit var recycler: SwipeableRecyclerView
 	lateinit var gameRuleTitle: TextView
+	lateinit var gameTitle: TextView
 	lateinit var leftButton: Button
 	lateinit var rightButton: Button
+	lateinit var progressBar: ProgressBar
 
 	private var cardAdapter: PersonCardAdapter = PersonCardAdapter()
 
@@ -57,7 +59,7 @@ class GameScreenView(
 	private fun initView() {
 
 		// Result Title
-		putView(
+		gameTitle = putView(
 			view = TextView(context) accept {
 				id = TASK_TITLE_ID
 				maxLines = 1
@@ -144,6 +146,13 @@ class GameScreenView(
 			params = constraintsParams(MATCH_PARENT, MATCH_CONSTRAINT)
 		)
 
+		progressBar = putView(
+			view = ProgressBar(context) accept {
+				id = CARD_PROGRESS_BAR_ID
+			},
+			params = constraintsParams(dp(60), dp(60))
+		)
+
 		editConstraints {
 			connect(TASK_TITLE_ID, CS_START, CS_PARENT_ID, CS_START)
 			connect(TASK_TITLE_ID, CS_END, CS_PARENT_ID, CS_END)
@@ -163,6 +172,11 @@ class GameScreenView(
 
 			connect(CARD_LIST_ID, CS_TOP, TASK_NAME_ID, CS_BOTTOM, dp(SPACE_BASE))
 			connect(CARD_LIST_ID, CS_BOTTOM, LEFT_BUTTON_ID, CS_TOP, dp(SPACE_BASE))
+
+			connect(CARD_PROGRESS_BAR_ID, CS_TOP, CS_PARENT_ID, CS_TOP, dp(SPACE_BASE))
+			connect(CARD_PROGRESS_BAR_ID, CS_BOTTOM, CS_PARENT_ID, CS_BOTTOM, dp(SPACE_BASE))
+			connect(CARD_PROGRESS_BAR_ID, CS_START, CS_PARENT_ID, CS_START, dp(SPACE_BASE))
+			connect(CARD_PROGRESS_BAR_ID, CS_END, CS_PARENT_ID, CS_END, dp(SPACE_BASE))
 
 			constrainMaxWidth(LEFT_BUTTON_ID, dp(300))
 			constrainMaxWidth(RIGHT_BUTTON_ID, dp(300))
@@ -188,7 +202,6 @@ class GameScreenView(
 	}
 
 	fun deflateButton(direction: DirectionType) {
-		log("direction $direction")
 		val button = when (direction) {
 			DirectionType.LEFT -> leftButton
 			DirectionType.RIGHT -> rightButton
@@ -203,5 +216,15 @@ class GameScreenView(
 		leftButton.text = game.leftShow.name
 		rightButton.text = game.rightShow.name
 		cardAdapter.calculateDiffs(game.cards)
+	}
+
+	fun isLoading(isLoading: Boolean) {
+		recycler.isVisible = !isLoading
+		gameRuleTitle.isVisible = !isLoading
+		leftButton.isVisible = !isLoading
+		rightButton.isVisible = !isLoading
+		gameTitle.isVisible = !isLoading
+
+		progressBar.isVisible = isLoading
 	}
 }

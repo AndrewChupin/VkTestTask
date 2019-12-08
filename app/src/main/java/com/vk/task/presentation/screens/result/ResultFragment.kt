@@ -37,4 +37,9 @@ class ResultFragment : FragmentStateful<ResultDispatcher, ResultViewState, Resul
             game bind content::provideData
         }
     }
+
+    override fun onBackClick(): Boolean {
+        dispatcher.tryAgain()
+        return true
+    }
 }

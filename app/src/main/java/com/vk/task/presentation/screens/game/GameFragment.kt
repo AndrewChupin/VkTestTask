@@ -52,6 +52,7 @@ class GameFragment : FragmentStateful<GameDispatcher, GameViewState, GameScreenV
     override fun render(state: GameViewState) {
         state accept {
             game bind content::setData
+            isLoading bind content::isLoading
         }
     }
 }

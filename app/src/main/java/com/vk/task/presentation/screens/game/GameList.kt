@@ -1,6 +1,7 @@
 package com.vk.task.presentation.screens.game
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
@@ -8,21 +9,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.vk.core.presentation.list.BaseMultiplyAdapter
 import com.vk.core.presentation.list.BaseViewHolder
-import com.vk.core.utils.extensions.accept
-import com.vk.core.utils.extensions.compatColor
-import com.vk.core.utils.extensions.putView
-import com.vk.core.utils.extensions.setPadding
+import com.vk.core.utils.core.log
+import com.vk.core.utils.extensions.*
 import com.vk.core.utils.view.*
 import com.vk.task.R
 import com.vk.task.data.game.GameCard
 import com.vk.task.utils.ROBOTO_MEDIUM
+import com.vk.task.utils.SimpleGlideListener
 
 
 class PersonCardAdapter : BaseMultiplyAdapter<GameCard, PersonCardViewHolder>() {
@@ -61,6 +67,7 @@ class PersonCardView(context: Context) : FrameLayout(context) {
 
     private lateinit var imageView: ImageView
     private lateinit var personNameText: TextView
+    private lateinit var gradient: View
 
     private fun initView() {
         setPadding(dp(SPACE_BASE))
@@ -74,7 +81,7 @@ class PersonCardView(context: Context) : FrameLayout(context) {
         )
 
         // Gradient
-        putView(
+        gradient = putView(
             View(context) accept {
                 id = GRADIENT_ID
                 background = context.getDrawable(R.drawable.dark_gradient)
@@ -103,10 +110,18 @@ class PersonCardView(context: Context) : FrameLayout(context) {
     }
 
     fun setData(card: GameCard) {
+        personNameText.isVisible = false
+        gradient.isVisible = false
+
         Glide.with(context)
             .load(card.character.image)
             .transform(CenterCrop(), RoundedCorners(dp(SPACE_BASE)))
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .addListener(SimpleGlideListener {
+                // Glide don't call if dead
+                personNameText.isVisible = true
+                gradient.isVisible = true
+            })
             .into(imageView)
 
         personNameText.text = card.character.name

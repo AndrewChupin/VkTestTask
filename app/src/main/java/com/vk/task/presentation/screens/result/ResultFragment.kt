@@ -34,7 +34,7 @@ class ResultFragment : FragmentStateful<ResultDispatcher, ResultViewState, Resul
 
     override fun render(state: ResultViewState) {
         state accept {
-            game bind content::provideData
+            result bind content::provideData
         }
     }
 

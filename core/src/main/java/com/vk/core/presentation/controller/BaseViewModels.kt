@@ -37,9 +37,9 @@ abstract class ViewModelBase : ViewModel(), Attachable, ReactiveActions {
 
 abstract class ViewModelStateful<VS: ViewState> : ViewModelBase(), DispatcherStateful<VS> {
 
-    // abstract val stateController: StateController<VS>
+    abstract val stateController: StateController<VS>
 
-    /*override fun getStateHolder(): StateHolder<VS> {
+    override fun getStateHolder(): StateHolder<VS> {
         return stateController
-    }*/
+    }
 }

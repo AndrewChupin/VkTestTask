@@ -9,9 +9,11 @@ import io.reactivex.Single
 
 interface GameStore {
     fun createNewGame(): Single<Game>
-    fun storeResult(answer: GameResult): Completable
+    fun storeResult(result: GameResult): Completable
+    fun deleteResult(): Completable
     fun getGameResult(): Single<GameResult>
 }
+
 
 class GameStoreDefault(
     private val gameRepository: GameRepository
@@ -27,5 +29,9 @@ class GameStoreDefault(
 
     override fun getGameResult(): Single<GameResult> = Single.defer {
         gameRepository.getGameResult()
+    }
+
+    override fun deleteResult(): Completable = Completable.defer {
+        gameRepository.deleteResult()
     }
 }

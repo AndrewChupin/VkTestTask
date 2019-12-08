@@ -13,6 +13,7 @@ interface GameRepository {
     fun getGame(): Single<Game>
     fun getGameResult(): Single<GameResult>
     fun saveGameResult(gameResult: GameResult): Completable
+    fun deleteResult(): Completable
 }
 
 class GameRepositoryAssets(
@@ -46,6 +47,10 @@ class GameRepositoryAssets(
         gameResult
     }
 
+    override fun deleteResult(): Completable = Completable.fromAction {
+        gameResult = null
+    }
+
     private fun loadGameGenerator(): GameGenerator {
         val gameStr = context.assets.open("game.json")
             .bufferedReader()
@@ -58,7 +63,7 @@ class GameRepositoryAssets(
         val shows = gameJson.getJSONArray("shows")
 
         check(shows.length() >= 2) {
-            "We need at least 2 shows to start the game"
+            "We need at least 2 shows to start the result"
         }
 
         val leftShowJson = shows.getJSONObject(0)

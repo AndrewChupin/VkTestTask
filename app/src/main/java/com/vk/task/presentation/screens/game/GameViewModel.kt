@@ -29,7 +29,7 @@ data class GameViewState(
 // StateController
 class GameStateController : StateController<GameViewState> {
 
-    private val dirtyState = GameDirtyState(EMPTY_STR)
+    private val dirtyState = GameDirtyState()
     override val state: GameViewState = createState()
 
     override fun createState(): GameViewState {
@@ -39,10 +39,55 @@ class GameStateController : StateController<GameViewState> {
         )
     }
 
+    fun startTheGame(newGame: Game) {
+        dirtyState.currentPosition = 0
+
+        state accept {
+            game.update(newGame)
+            isLoading.update(false)
+        }
+    }
+
+    fun countSwipe(direction: DirectionType): GameResult? {
+        dirtyState accept {
+            state.game.currentValue() optional { game ->
+                val card = game.cards[currentPosition]
+
+                val answerShow = when (direction == DirectionType.LEFT) {
+                    true -> game.leftShow
+                    else -> game.rightShow
+                }
+
+                val isRightAnswer = answerShow.id == card.show.id
+                answers.add(GameAnswer(
+                    card.character,
+                    isRightAnswer,
+                    answerShow,
+                    card.show
+                ))
+
+                currentPosition++
+
+                if (currentPosition == game.cards.size) {
+                    return GameResult(
+                        title = game.title,
+                        answers = answers.reversed(),
+                        totalPoints = answers.size,
+                        earnedPoints = answers.count(GameAnswer::isRightAnswer)
+                    )
+                }
+            }
+        }
+
+        return null
+    }
+
     private data class GameDirtyState(
-        val countOf: String
+        var answers: MutableList<GameAnswer> = mutableListOf(),
+        var currentPosition: Int = 0
     )
 }
+
 
 // Dispatcher
 interface GameDispatcher : DispatcherStateful<GameViewState> {
@@ -54,73 +99,25 @@ interface GameDispatcher : DispatcherStateful<GameViewState> {
 class GameViewModel(
     private val router: Router,
     private val cardStore: GameStore
-) : ViewModelStateful<GameViewState>(), GameDispatcher, StateController<GameViewState> {
+) : ViewModelStateful<GameViewState>(), GameDispatcher {
 
+    override val stateController = GameStateController()
     override val disposables: CompositeDisposable = CompositeDisposable()
-    override val state: GameViewState = createState()
-
-    private var answers = mutableListOf<GameAnswer>()
-    private var currentPosition = 0
 
     init {
         cardStore.createNewGame()
-            .bindSubscribe(
-                onSuccess = { newGame ->
-                    currentPosition = 0
-
-                    state accept {
-                        game.update(newGame)
-                        isLoading.update(false)
-                    }
-
-                })
+            .bindSubscribe(onSuccess = { newGame ->
+                stateController.startTheGame(newGame)
+            })
     }
 
-    override fun getStateHolder(): StateHolder<GameViewState> {
-        return this
-    }
-
-    override fun createState(): GameViewState {
-        return GameViewState(
-            game = ViewProperty.create(null),
-            isLoading = ViewProperty.create(true)
-        )
-    }
-
+    // TODO-2: This signature looks really weird i have to change it, but at first i have to change Swipeable API
     override fun swipedNext(direction: DirectionType) {
-        val position = currentPosition
-
-        state.game.currentValue() optional { game ->
-            val card = game.cards[position]
-
-            val answerShow = when (direction == DirectionType.LEFT) {
-                true -> game.leftShow
-                else -> game.rightShow
-            }
-
-            val isRightAnswer = answerShow.id == card.show.id
-            answers.add(GameAnswer(
-                card.character,
-                isRightAnswer,
-                answerShow,
-                card.show
-            ))
-
-            currentPosition++
-
-            if (currentPosition == game.cards.size) {
-                answers.count()
-                val result = GameResult(
-                    title = game.title,
-                    answers = answers.reversed(),
-                    totalPoints = answers.size,
-                    earnedPoints = answers.count(GameAnswer::isRightAnswer)
-                )
-                cardStore.storeResult(result)
-                    .bindSubscribe(onSuccess = {
-                        router.navigateTo(ResultScreen())
-                    })
-            }
+        stateController.countSwipe(direction) optional { result ->
+            cardStore.storeResult(result)
+                .bindSubscribe(onSuccess = {
+                    router.navigateTo(ResultScreen())
+                })
         }
     }
 }

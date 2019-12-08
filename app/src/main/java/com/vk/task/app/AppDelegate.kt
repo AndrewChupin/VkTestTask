@@ -6,7 +6,7 @@ import android.content.Context
 import com.vk.task.dependency.injector.DefaultInjectorPlugin
 
 
-class AppDelegate : Application() {
+open class AppDelegate : Application() {
 
     companion object {
         @SuppressLint("StaticFieldLeak")

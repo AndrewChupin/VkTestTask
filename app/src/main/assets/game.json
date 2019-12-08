@@ -1,0 +1,69 @@
+{
+  "game_title": "Разделите героев сериалов",
+  "shows": [
+    {
+      "id": 0,
+      "name": "Игра Престолов",
+      "type": "Сериал",
+      "characters": [
+        {
+          "id": 1,
+          "name": "Джон Сноу",
+          "image": "1.John"
+        },
+        {
+          "id": 4,
+          "name": "Давос",
+          "image": "4.Davos"
+        },
+        {
+          "id": 5,
+          "name": "Семвел Тарли",
+          "image": "5.Semwell"
+        },
+        {
+          "id": 9,
+          "name": "Мирцелла",
+          "image": "9.Mircella"
+        },
+        {
+          "id": 10,
+          "name": "Лиана",
+          "image": "10.Liana"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Властелин Колец",
+      "type": "Сериал",
+      "characters": [
+        {
+          "id": 2,
+          "name": "Фродо Беггинс",
+          "image": "2.Frodo"
+        },
+        {
+          "id": 3,
+          "name": "Эовин",
+          "image": "3.Eovin"
+        },
+        {
+          "id": 6,
+          "name": "Арагорн",
+          "image": "6.Aragorn"
+        },
+        {
+          "id": 7,
+          "name": "Арвен",
+          "image": "7.Arven"
+        },
+        {
+          "id": 8,
+          "name": "Эомер",
+          "image": "8.Eomer"
+        }
+      ]
+    }
+  ]
+}

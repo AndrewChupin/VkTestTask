@@ -21,6 +21,7 @@ abstract class BaseFragment<V: View> : Fragment(), ActivityActionDelegate {
     }
 
     private var isFirstCreateView = true
+
     private var privateContent: V? = null
     protected val content: V get() {
         return privateContent ?: throw IllegalStateException("Content of this fragment isn't yet initialized or already destroyed")

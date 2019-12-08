@@ -5,10 +5,12 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import com.vk.core.utils.extensions.optional
 import com.vk.task.dependency.AppComponent
 import com.vk.task.dependency.MainComponent
 import com.vk.task.dependency.injector.InjectorPlugin
-import com.vk.task.presentation.main.MainActivity
+import com.vk.task.presentation.screens.main.MainActivity
+import com.vk.task.presentation.screens.game.GameFragment
 
 
 @MainThread
@@ -43,5 +45,13 @@ object AppInjector {
         component.inject(activity)
         add(activity, component)
         return component
+    }
+
+    fun injectFragment(fragment: GameFragment) {
+        map[fragment.requireActivity()] optional { data ->
+            plugin
+                .representComponent(data as MainComponent, fragment)
+                .inject(fragment)
+        } ?: throw IllegalStateException("MainComponent is null init him")
     }
 }

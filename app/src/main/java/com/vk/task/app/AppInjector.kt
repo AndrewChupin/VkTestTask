@@ -11,6 +11,7 @@ import com.vk.task.dependency.MainComponent
 import com.vk.task.dependency.injector.InjectorPlugin
 import com.vk.task.presentation.screens.main.MainActivity
 import com.vk.task.presentation.screens.game.GameFragment
+import com.vk.task.presentation.screens.result.ResultFragment
 
 
 @MainThread
@@ -48,6 +49,14 @@ object AppInjector {
     }
 
     fun injectFragment(fragment: GameFragment) {
+        map[fragment.requireActivity()] optional { data ->
+            plugin
+                .representComponent(data as MainComponent, fragment)
+                .inject(fragment)
+        } ?: throw IllegalStateException("MainComponent is null init him")
+    }
+
+    fun injectFragment(fragment: ResultFragment) {
         map[fragment.requireActivity()] optional { data ->
             plugin
                 .representComponent(data as MainComponent, fragment)

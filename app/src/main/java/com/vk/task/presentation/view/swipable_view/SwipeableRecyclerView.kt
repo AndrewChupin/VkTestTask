@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
-import com.vk.task.presentation.view.swipable_view.stuff.CardHorizontalLayoutManager
 import com.vk.task.utils.DirectionType
 
 class SwipeableRecyclerView @JvmOverloads constructor(
@@ -14,8 +13,8 @@ class SwipeableRecyclerView @JvmOverloads constructor(
 ) : RecyclerView(context, attrs, defStyle) {
 
     interface Delegate {
-        fun onCardDragging(direction: DirectionType, ratio: Float)
-        fun onCardSwiped(direction: DirectionType)
+        fun onScrolling(direction: DirectionType, ratio: Float)
+        fun onSwiped(direction: DirectionType)
     }
 
     override fun setLayoutManager(manager: LayoutManager?) {
@@ -24,20 +23,6 @@ class SwipeableRecyclerView @JvmOverloads constructor(
         }
 
         super.setLayoutManager(manager)
-    }
-
-    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-        val safeLm = layoutManager
-
-        if (safeLm == null || safeLm !is CardHorizontalLayoutManager) {
-            return super.onInterceptTouchEvent(event)
-        }
-
-        if (event.action != MotionEvent.ACTION_DOWN) {
-            safeLm.updateScales(event.y)
-        }
-
-        return super.onInterceptTouchEvent(event)
     }
 
     fun swipeLeft() {

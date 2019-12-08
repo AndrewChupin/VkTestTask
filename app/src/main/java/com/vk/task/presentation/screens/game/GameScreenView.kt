@@ -17,12 +17,14 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
+import com.vk.core.utils.core.log
 import com.vk.core.utils.extensions.*
 import com.vk.task.data.game.Game
-import com.vk.task.presentation.view.swipable_view.stuff.CardHorizontalLayoutManager
+import com.vk.task.presentation.view.swipable_view.CardHorizontalLayoutManager
 import com.vk.task.presentation.view.swipable_view.SwipeableRecyclerView
-import com.vk.task.presentation.view.swipable_view.stuff.SwipeableSnapHelper
+import com.vk.task.presentation.view.swipable_view.SwipeableSnapHelper
 import com.vk.task.utils.DirectionType
+import com.vk.task.utils.ext.setBackgroundNinePatch
 
 
 @SuppressLint("ViewConstructor")
@@ -32,6 +34,8 @@ class GameScreenView(
 ) : ConstraintLayout(context) {
 
 	companion object {
+		const val DEFAULT_INFLATE_REDUCER = 6
+
 		val TASK_TITLE_ID = View.generateViewId()
 		val TASK_NAME_ID = View.generateViewId()
 		val LEFT_BUTTON_ID = View.generateViewId()
@@ -49,6 +53,7 @@ class GameScreenView(
 	init { initView() }
 
 	private fun initView() {
+
 		// Result Title
 		putView(
 			view = TextView(context) accept {
@@ -89,23 +94,13 @@ class GameScreenView(
 				typeface = ROBOTO_MEDIUM
 				maxLines = 2
 				ellipsize = TextUtils.TruncateAt.END
+				includeFontPadding = false
 
 				setTextColor(context.compatColor(R.color.white))
 				setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE_TEXT)
 
-				val ninepatch: NinePatchDrawable
-				val image = BitmapFactory.decodeResource(resources, R.drawable.bg_answer_left)
-				if (image.ninePatchChunk != null) {
-					val chunk = image.ninePatchChunk
-					val paddingRectangle = Rect(
-						(dp(SPACE_DOUBLE) * 1.5).toInt(),
-						dp(SPACE_BASE),
-						(dp(SPACE_DOUBLE) * 1.5).toInt(),
-						dp(SPACE_ONE_AND_HALF)
-					)
-					ninepatch = NinePatchDrawable(resources, image, chunk, paddingRectangle, null)
-					background = ninepatch
-				}
+				val paddingRectangle = Rect(dp(SPACE_HUGE), dp(SPACE_BASE), dp(40), dp(SPACE_ONE_AND_HALF))
+				setBackgroundNinePatch(R.drawable.bg_answer_left, paddingRectangle)
 			},
 			params = constraintsParams(MATCH_CONSTRAINT, WRAP_CONTENT)
 		)
@@ -118,23 +113,13 @@ class GameScreenView(
 				typeface = ROBOTO_MEDIUM
 				maxLines = 2
 				ellipsize = TextUtils.TruncateAt.END
+				includeFontPadding = false
 
 				setTextColor(context.compatColor(R.color.white))
 				setTextSize(TypedValue.COMPLEX_UNIT_SP, FONT_SIZE_TEXT)
 
-				val ninepatch: NinePatchDrawable
-				val image = BitmapFactory.decodeResource(resources, R.drawable.bg_answer_right)
-				if (image.ninePatchChunk != null) {
-					val chunk = image.ninePatchChunk
-					val paddingRectangle = Rect(
-						(dp(SPACE_DOUBLE) * 1.5).toInt(),
-						dp(SPACE_BASE),
-						(dp(SPACE_DOUBLE) * 1.5).toInt(),
-						dp(SPACE_ONE_AND_HALF)
-					)
-					ninepatch = NinePatchDrawable(resources, image, chunk, paddingRectangle, null)
-					background = ninepatch
-				}
+				val paddingRectangle = Rect(dp(40), dp(SPACE_BASE), dp(SPACE_HUGE), dp(SPACE_ONE_AND_HALF))
+				setBackgroundNinePatch(R.drawable.bg_answer_right, paddingRectangle)
 			},
 			params = constraintsParams(MATCH_CONSTRAINT, WRAP_CONTENT)
 		)
@@ -143,6 +128,7 @@ class GameScreenView(
 			view = SwipeableRecyclerView(context) accept {
 				id = CARD_LIST_ID
 				adapter = cardAdapter
+				clipToPadding = false
 				layoutManager = CardHorizontalLayoutManager(delegate) accept {
 					itemAnimator.apply {
 						if (this is DefaultItemAnimator) {
@@ -176,6 +162,9 @@ class GameScreenView(
 			connect(CARD_LIST_ID, CS_TOP, TASK_NAME_ID, CS_BOTTOM, dp(SPACE_BASE))
 			connect(CARD_LIST_ID, CS_BOTTOM, LEFT_BUTTON_ID, CS_TOP, dp(SPACE_BASE))
 
+			constrainMaxWidth(LEFT_BUTTON_ID, dp(300))
+			constrainMaxWidth(RIGHT_BUTTON_ID, dp(300))
+
 			// Same for RtoL and LtoR
 			createHorizontalChain(
 				CS_PARENT_ID, ConstraintSet.LEFT,
@@ -191,12 +180,13 @@ class GameScreenView(
 			DirectionType.RIGHT -> rightButton
 		}
 
-		val newScale = 1f + ratio / 4
+		val newScale = 1 + ratio / DEFAULT_INFLATE_REDUCER
 		button.scaleX = newScale
 		button.scaleY = newScale
 	}
 
 	fun deflateButton(direction: DirectionType) {
+		log("direction $direction")
 		val button = when (direction) {
 			DirectionType.LEFT -> leftButton
 			DirectionType.RIGHT -> rightButton

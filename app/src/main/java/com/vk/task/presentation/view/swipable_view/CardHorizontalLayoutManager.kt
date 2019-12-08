@@ -1,11 +1,10 @@
-package com.vk.task.presentation.view.swipable_view.stuff
+package com.vk.task.presentation.view.swipable_view
 
 import android.graphics.PointF
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.core.utils.extensions.optional
 import com.vk.core.utils.view.MATCH_PARENT
-import com.vk.task.presentation.view.swipable_view.SwipeableRecyclerView
 import com.vk.task.utils.DirectionType
 import kotlin.math.abs
 import kotlin.math.min
@@ -23,10 +22,10 @@ class CardHorizontalLayoutManager(
     companion object {
         private const val DEFAULT_ITEM_CACHE = 3
         private const val DEFAULT_PREVIOUS_SCALE = 0.9f
+        private const val DEFAULT_ROTATION = 2.25f
     }
 
     private var currentX = 0
-    private var currentScale = 0.0f
 
     internal var state = SwipeStateType.STATIC
     internal var currentPosition = 0
@@ -66,7 +65,8 @@ class CardHorizontalLayoutManager(
                 }
                 currentPosition < targetPosition -> smoothScrollTo(targetPosition)
             }
-            RecyclerView.SCROLL_STATE_DRAGGING -> state = SwipeStateType.DRAGGING
+            RecyclerView.SCROLL_STATE_DRAGGING -> state =
+                SwipeStateType.DRAGGING
             RecyclerView.SCROLL_STATE_SETTLING -> Unit // Because don't call every time
         }
     }
@@ -88,16 +88,6 @@ class CardHorizontalLayoutManager(
         return null
     }
 
-    internal fun updateScales(y: Float) {
-        if (currentPosition < itemCount) {
-            val view = findViewByPosition(currentPosition)
-            if (view != null) {
-                val half = height / 2.0f
-                currentScale = -(y - half - view.top.toFloat()) / half
-            }
-        }
-    }
-
     private fun onChange(recycler: RecyclerView.Recycler) {
         if (isSwipeCompleted()) {
             currentCard optional { card ->
@@ -105,13 +95,13 @@ class CardHorizontalLayoutManager(
             }
 
             state = SwipeStateType.RESTORING
+            cardStackListener.onSwiped(getScrollDirection())
+
             currentPosition++
             currentX = 0
             if (currentPosition == targetPosition) {
                 targetPosition = RecyclerView.NO_POSITION
             }
-
-            cardStackListener.onCardSwiped(getScrollDirection())
         }
 
         detachAndScrapAttachedViews(recycler)
@@ -146,8 +136,10 @@ class CardHorizontalLayoutManager(
         }
 
         if (state == SwipeStateType.DRAGGING) {
-            cardStackListener.onCardDragging(getScrollDirection(), getCurrentRatio())
+            cardStackListener.onScrolling(getScrollDirection(), getCurrentRatio())
         }
+
+
     }
 
 
@@ -180,8 +172,7 @@ class CardHorizontalLayoutManager(
 
     // Rotation
     private fun updateRotation(view: View) {
-        val degree = currentX * 30.0f / width * currentScale // card degree
-        view.rotation = degree
+        view.rotation = abs(getCurrentRatio()) * DEFAULT_ROTATION
     }
 
     private fun resetRotation(view: View) {
@@ -191,7 +182,7 @@ class CardHorizontalLayoutManager(
 
     // Scrolls
     private fun canScrollToPosition(position: Int, itemCount: Int): Boolean {
-        if (currentPosition < position || position < 0 || itemCount < position) {
+        if (currentPosition > position || position < 0 || itemCount < position) {
             return false
         }
 
@@ -199,10 +190,12 @@ class CardHorizontalLayoutManager(
     }
 
     private fun smoothScrollTo(position: Int) {
-        currentScale = 0.0f
         targetPosition = position
 
-        val scroller = SwipeableScroller(ScrollType.AUTO, this)
+        val scroller = SwipeableScroller(
+            ScrollType.AUTO,
+            this
+        )
         scroller.targetPosition = currentPosition
         startSmoothScroll(scroller)
     }

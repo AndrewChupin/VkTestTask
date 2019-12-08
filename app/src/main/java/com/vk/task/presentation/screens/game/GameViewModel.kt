@@ -3,10 +3,11 @@ package com.vk.task.presentation.screens.game
 import com.vk.core.presentation.controller.*
 import com.vk.core.presentation.state.*
 import com.vk.core.utils.extensions.optional
-import com.vk.task.data.game.AnswerType
 import com.vk.task.data.game.Game
 import com.vk.task.data.game.GameAnswer
+import com.vk.task.data.game.GameResult
 import com.vk.task.domain.card.GameStore
+import com.vk.task.presentation.screens.result.ResultScreen
 import com.vk.task.utils.DirectionType
 import com.vk.task.utils.EMPTY_STR
 import io.reactivex.disposables.CompositeDisposable
@@ -14,110 +15,99 @@ import ru.terrakok.cicerone.Router
 
 
 // ViewState
-data class CardViewState(
+data class GameViewState(
     val game: ViewProperty<Game>
 ) : ViewState
 
 
 // StateController
-class CardStateController : StateController<CardViewState> {
+class GameStateController : StateController<GameViewState> {
 
-    private val dirtyState = CardDirtyState(EMPTY_STR)
-    override val state: CardViewState = createState()
+    private val dirtyState = GameDirtyState(EMPTY_STR)
+    override val state: GameViewState = createState()
 
-    override fun createState(): CardViewState {
-        return CardViewState(
+    override fun createState(): GameViewState {
+        return GameViewState(
             game = ViewProperty.create(null)
         )
     }
 
-    private data class CardDirtyState(
+    private data class GameDirtyState(
         val countOf: String
     )
 }
 
-
-// Изменить API Card
-// Нормальный проброс эвентов
-// animItem при инизиализации листа, может быть подозрительно
-// Архитектура
-// Загрузка
-// Попробовать снова при ошибке
-// Время на ответ
-
 // Dispatcher
-interface CardDispatcher : DispatcherStateful<CardViewState> {
-    fun swipedNextCard(direction: DirectionType)
+interface GameDispatcher : DispatcherStateful<GameViewState> {
+    fun swipedNext(direction: DirectionType)
 }
 
 
 // ViewModel
-class CardViewModel(
+class GameViewModel(
     private val router: Router,
     private val cardStore: GameStore
-) : ViewModelStateful<CardViewState>(), CardDispatcher, StateController<CardViewState> {
+) : ViewModelStateful<GameViewState>(), GameDispatcher, StateController<GameViewState> {
 
     override val disposables: CompositeDisposable = CompositeDisposable()
-    override val state: CardViewState = createState()
+    override val state: GameViewState = createState()
 
+    private var answers = mutableListOf<GameAnswer>()
     private var currentPosition = 0
 
     init {
         cardStore.createNewGame()
             .bindSubscribe(
                 onSuccess = { game ->
-                    currentPosition = game.cards.size - 1
+                    currentPosition = 0
                     state.game.update(game)
                 })
     }
 
-    override fun getStateHolder(): StateHolder<CardViewState> {
+    override fun getStateHolder(): StateHolder<GameViewState> {
         return this
     }
 
-    override fun createState(): CardViewState {
-        return CardViewState(
+    override fun createState(): GameViewState {
+        return GameViewState(
             game = ViewProperty.create(null)
         )
     }
 
-    override fun swipedNextCard(direction: DirectionType) {
+    override fun swipedNext(direction: DirectionType) {
         val position = currentPosition
+
         state.game.currentValue() optional { game ->
             val card = game.cards[position]
 
-            val show = if (direction == DirectionType.LEFT) {
-                game.leftShow
-            } else {
-                game.rightShow
+            val answerShow = when (direction == DirectionType.LEFT) {
+                true -> game.leftShow
+                else -> game.rightShow
             }
 
-            if (card.character.showId == show.id) {
-                cardStore.storeAnswer(
-                    GameAnswer(
-                        card.character,
-                        AnswerType.RIGHT,
-                        show,
-                        null
-                    )
-                )
-            } else {
-                GameAnswer(
-                    card.character,
-                    AnswerType.WRONG,
-                    show,
-                    if (direction == DirectionType.LEFT) {
-                        game.rightShow
-                    } else {
-                        game.leftShow
-                    }
-                )
-            }
-        }
-        currentPosition--
+            val isRightAnswer = answerShow.id == card.show.id
+            answers.add(GameAnswer(
+                card.character,
+                isRightAnswer,
+                answerShow,
+                card.show
+            ))
 
-        if (currentPosition < 0) {
-            // router.navigateTo
+            currentPosition++
+
+            if (currentPosition == game.cards.size) {
+                answers.count()
+                val result = GameResult(
+                    title = game.title,
+                    answers = answers,
+                    totalPoints = answers.size,
+                    earnedPoints = answers.count(GameAnswer::isRightAnswer)
+                )
+                cardStore.storeResult(result)
+                    .bindSubscribe(onSuccess = {
+                        router.newRootScreen(ResultScreen())
+                    })
+            }
         }
     }
 }

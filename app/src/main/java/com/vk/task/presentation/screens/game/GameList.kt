@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -27,6 +28,7 @@ import com.vk.task.data.game.CharacterInfo
 import com.vk.task.data.game.GameCard
 import com.vk.task.utils.ROBOTO_BOLD
 import com.vk.task.utils.ROBOTO_MEDIUM
+import com.vk.task.utils.ext.setBackgroundNinePatch
 
 
 class PersonCardAdapter : BaseMultiplyAdapter<GameCard, PersonCardViewHolder>() {
@@ -108,12 +110,10 @@ class PersonCardView(context: Context) : FrameLayout(context) {
 
     fun setData(card: GameCard) {
         Glide.with(context)
-            .load(getAssetsUrl(card.character.image))
+            .load(card.character.image)
             .apply(RequestOptions().transforms(CenterCrop(), RoundedCorners(dp(SPACE_BASE))))
             .into(imageView)
 
         personNameText.text = card.character.name
     }
-
-    fun getAssetsUrl(fileName: String) = Uri.parse("file:///android_asset/$fileName.jpg")
 }
